@@ -72,6 +72,8 @@ namespace adsl {
             return size() == 0;
         }
 
+        // update i-th value with updater(i-th value)
+        // time complexity: Θ(logN)
         template <typename F>
         void update(size_type idx, F&& updater) noexcept(noexcept(updater(std::declval<value_type>()), recalc_at(idx)))
         requires requires { {updater(std::declval<value_type>())} -> std::convertible_to<value_type>; }
@@ -86,11 +88,13 @@ namespace adsl {
                 recalc_at(idx);
         }
 
+        // time complexity: Θ(logN)
         void set(size_type idx, const_reference v) noexcept(update(size_type{}, []() noexcept { return value_type{}; })) {
             update(idx, [=, &v](auto&&) noexcept { return v; });
         }
 
         // accumulate [l, r), returns none if the given range is invalid
+        // time complexity: Θ(logN)
         std::optional<value_type> accumulate(size_type l, size_type r) const noexcept(noexcept(std::optional<value_type>(M::op(M::unit(), M::unit())))) {
             if (l >= size() || r > size() || l >= r)
                 return std::nullopt_t{};
