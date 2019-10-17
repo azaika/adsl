@@ -68,9 +68,14 @@ namespace adsl {
             return actual_size;
         }
 
+        bool is_empty() const noexcept {
+            return size() == 0;
+        }
+
         template <typename F>
-        requires requires (F&& f) { {f(M::unit())} -> std::convertible_to<value_type>; }
-        void update(size_type idx, F&& updater) noexcept(noexcept(updater(std::declval<value_type>()), recalc_at(idx))) {
+        void update(size_type idx, F&& updater) noexcept(noexcept(updater(std::declval<value_type>()), recalc_at(idx)))
+        requires requires { {updater(std::declval<value_type>())} -> std::convertible_to<value_type>; }
+        {
             if (idx >= size())
                 return;
             
