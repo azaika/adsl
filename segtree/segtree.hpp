@@ -43,7 +43,7 @@ namespace adsl {
             while (len < _size)
                 len <<= 1;
             
-            node = container_type(len * 2, M::id());
+            node = container_type(len * 2, M::unit());
         }
         explicit segtree(const container_type& src) : actual_size(src.size()) {
             if (src.size() == 0)
@@ -53,7 +53,7 @@ namespace adsl {
             while (len < src.size())
                 len <<= 1;
             
-            node = container_type(len * 2, M::id());
+            node = container_type(len * 2, M::unit());
 
             auto it = node.begin();
             std::advance(it, len);
@@ -69,7 +69,7 @@ namespace adsl {
         }
 
         template <typename F>
-        requires requires (F&& f) { {f(M::id())} -> std::convertible_to<value_type>; }
+        requires requires (F&& f) { {f(M::unit())} -> std::convertible_to<value_type>; }
         void update(size_type idx, F&& updater) noexcept(noexcept(updater(std::declval<value_type>()), recalc_at(idx))) {
             if (idx >= size())
                 return;
@@ -86,14 +86,14 @@ namespace adsl {
         }
 
         // accumulate [l, r), returns none if the given range is invalid
-        std::optional<value_type> accumulate(size_type l, size_type r) const noexcept(noexcept(std::optional<value_type>(M::op(M::id(), M::id())))) {
+        std::optional<value_type> accumulate(size_type l, size_type r) const noexcept(noexcept(std::optional<value_type>(M::op(M::unit(), M::unit())))) {
             if (l >= size() || r > size() || l >= r)
                 return std::nullopt_t{};
             
             l += size();
             r += size();
 
-            value_type res_l = M::id(), res_r = M::id();
+            value_type res_l = M::unit(), res_r = M::unit();
             while (l < r) {
                 if (l & 1) {
                     res_l = M::op(res_l, node[l]);

@@ -11,9 +11,9 @@ namespace adsl {
 	concept Monoid = requires(M m) {
 		typename M::value_type;
 
-		{M::id()} -> std::convertible_to<typename M::value_type>;
+		{M::unit()} -> std::convertible_to<typename M::value_type>;
 		// M::op must be associative
-		{M::op(M::id(), M::id())} -> std::convertible_to<typename M::value_type>;
+		{M::op(M::unit(), M::unit())} -> std::convertible_to<typename M::value_type>;
 	};
 
 	template <typename T>

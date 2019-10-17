@@ -10,7 +10,7 @@ namespace adsl {
     struct make_monoid {
         using value_type = ValueType;
         
-        static constexpr value_type id() noexcept {
+        static constexpr value_type unit() noexcept {
             return identity;
         }
         
@@ -23,7 +23,7 @@ namespace adsl {
 	struct default_monoid {
 		using value_type = T;
 
-		static constexpr value_type id() noexcept(noexcept(value_type{})) {
+		static constexpr value_type unit() noexcept(noexcept(value_type{})) {
 			return value_type{};
 		}
 
