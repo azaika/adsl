@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <optional>
+#include <type_traits>
 #include "../algebra/data_type.hpp"
 #include "../algebra/type_util.hpp"
 
@@ -81,6 +83,30 @@ namespace adsl {
 
         void update(size_type idx, const_reference v) noexcept(update(size_type{}, []() noexcept { return value_type{}; })) {
             update(idx, [=, &v](auto&&) noexcept { return v; });
+        }
+
+        // accumulate [l, r), returns none if the given range is invalid
+        std::optional<value_type> accumulate(size_type l, size_type r) const noexcept(noexcept(std::optional<value_type>(M::op(M::id(), M::id())))) {
+            if (l >= size() || r > size() || l >= r)
+                return std::nullopt_t{};
+            
+            l += size();
+            r += size();
+
+            value_type res_l = M::id(), res_r = M::id();
+            while (l < r) {
+                if (l & 1) {
+                    res_l = M::op(res_l, node[l]);
+                    ++l;
+                }
+                if (r & 1)
+                    res_r = M::op(node[r - 1], res_r);
+
+                l >>= 1;
+                r >>= 1;
+            }
+
+            return M::op(res_l, res_r);
         }
     };
 
