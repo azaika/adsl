@@ -27,6 +27,7 @@ namespace adsl {
         Container node;
         size_type actual_size;
 
+        // contracts: idx <- [0, node.size() / 2)
         void recalc_at(size_type idx) noexcept(noexcept(M::op(std::declval<value_type>(), std::declval<value_type>()))) {
             node[idx] = M::op(node[idx << 1], node[(idx << 1) + 1]);
         }
@@ -67,7 +68,7 @@ namespace adsl {
 
         template <typename F>
         requires requires (F&& f) { {f(M::id())} -> std::convertible_to<value_type>; }
-        void update(size_type idx, F&& updater) noexcept(noexcept(updater(node[idx]), recalc_at(idx))){
+        void update(size_type idx, F&& updater) noexcept(noexcept(updater(std::declval<value_type>()), recalc_at(idx))) {
             if (idx >= size())
                 return;
             
@@ -78,7 +79,7 @@ namespace adsl {
                 recalc_at(idx);
         }
 
-        void update(size_type idx, const_reference v) {
+        void update(size_type idx, const_reference v) noexcept(update(idx, [=, &v](auto&&) noexcept { return v; })) {
             update(idx, [=, &v](auto&&) noexcept { return v; });
         }
     };
