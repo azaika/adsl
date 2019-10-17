@@ -79,7 +79,7 @@ namespace adsl {
                 recalc_at(idx);
         }
 
-        void update(size_type idx, const_reference v) noexcept(update(idx, [=, &v](auto&&) noexcept { return v; })) {
+        void update(size_type idx, const_reference v) noexcept(update(size_type{}, []() noexcept { return value_type{}; })) {
             update(idx, [=, &v](auto&&) noexcept { return v; });
         }
     };
