@@ -60,8 +60,8 @@ namespace adsl {
             
             std::copy(src.begin(), src.end(), it);
 
-            for (size_type i = len - 1; i >= 0; --i)
-                recalc_at(i);
+            for (size_type i = 0; i < len; ++i)
+                recalc_at(len - 1 - i);
         }
 
         size_type size() const noexcept {
@@ -81,7 +81,7 @@ namespace adsl {
             if (idx >= size())
                 return;
             
-            idx += size();
+            idx += node.size() / 2;
 
             node[idx] = updater(node[idx]);
             while (idx >>= 1)
@@ -97,10 +97,10 @@ namespace adsl {
         // time complexity: Θ(logN)
         std::optional<value_type> accumulate(size_type l, size_type r) const noexcept(noexcept(std::optional<value_type>(M::op(M::unit(), M::unit())))) {
             if (l >= size() || r > size() || l >= r)
-                return std::nullopt_t{};
+                return std::nullopt;
             
-            l += size();
-            r += size();
+            l += node.size() / 2;
+            r += node.size() / 2;
 
             value_type res_l = M::unit(), res_r = M::unit();
             while (l < r) {
