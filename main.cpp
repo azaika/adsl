@@ -1,7 +1,7 @@
-#include "segtree/segtree.hpp"
 #include <cstdint>
 #include <algorithm>
 #include <string>
+#include "include/segtree/segtree.hpp"
 
 using u32 = std::uint32_t;
 
