@@ -6,6 +6,9 @@
 using i64 = std::int64_t;
 
 int main() {
+    std::cin.tie(nullptr);
+    std::ios::sync_with_stdio(false);
+
     int N, Q;
     std::cin >> N >> Q;
 
@@ -16,20 +19,14 @@ int main() {
     adsl::segtree<adsl::default_monoid<i64>> seg(vec);
 
     for (int i = 0; i < Q; ++i) {
-        int kind;
-        std::cin >> kind;
+        int kind, x, y;
+        std::cin >> kind >> x >> y;
 
-        if (kind == 0) {
-            i64 p, x;
-            std::cin >> p >> x;
-
-            seg.update(p, [=](auto&& v) noexcept { return v + x; });
-        }
-        else {
-            int l, r;
-            std::cin >> l >> r;
-
-            std::cout << seg.accumulate(l, r).value() << std::endl;
-        }
+        if (kind == 0)
+            seg.update(x, [=](auto&& v) constexpr noexcept { return v + y; });
+        else
+            std::cout << seg.accumulate(x, y).value() << "\n";
     }
+
+    std::cout << std::flush;
 }
