@@ -22,6 +22,25 @@ namespace adsl {
 		{x + y} -> std::convertible_to<T>;
 	};
 
+	// M::op must be commutative
+	template <typename M>
+	concept CommutativeMonoid = Monoid<M>;
+
+
+	template <typename G>
+	concept Group = requires(G g) {
+		typename M::value_type;
+
+		{G::unit()} -> std::convertible_to<typename G::value_type>;
+		// G::op(a, G::inv(a)) must equal to G::unit()
+		{G::inv(G::unit())} -> std::convertible_to<typename G::value_type>;
+		// G::op must be associative
+		{G::op(G::unit(), G::unit())} -> std::convertible_to<typename G::value_type>;
+	};
+
+	// G::op must be commutative
+	template <typename G>
+	concept CommutativeGroup = Group<G>;
 }
 
 #endif // !ADSL_ALGEBRA_DATA_TYPE_HPP
