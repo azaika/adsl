@@ -26,7 +26,7 @@ namespace adsl {
         using container_type = Container;
         
     private:
-        Container node;
+        container_type node;
         size_type actual_size;
 
         // contracts: idx <- [0, node.size() / 2)

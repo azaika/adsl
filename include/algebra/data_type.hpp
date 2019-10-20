@@ -24,7 +24,7 @@ namespace adsl {
 
 	// M::op must be commutative
 	template <typename M>
-	concept CommutativeMonoid = Monoid<M>;
+	concept CommutativeMonoid = Monoid<M> && true;
 
 
 	template <typename G>
@@ -40,7 +40,7 @@ namespace adsl {
 
 	// G::op must be commutative
 	template <typename G>
-	concept CommutativeGroup = Group<G>;
+	concept CommutativeGroup = Group<G> && true;
 }
 
 #endif // !ADSL_ALGEBRA_DATA_TYPE_HPP
