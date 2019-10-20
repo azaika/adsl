@@ -1,21 +1,26 @@
 
-CALLDIR=`pwd`
+gpp -std=c++2a -O2 ./$1/source.cpp
 
-cd $1
+for file in `\find ./$1/in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!' | sort -f`; do
 
-gpp -std=c++2a -O2 source.cpp
+	./a.out < "./$1/in/$file.in" > tmp_output
 
-for file in `\find ./in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!'`; do
+	ave_time=0
+	for i in `seq 5`; do
+		start_time=$(date +"%s%3N")
+
+		./a.out < "./$1/in/$file.in" > tmp_output
 	
-	start_time=$(date +"%s%3N")
+		end_time=$(date +"%s%3N")
 
-	./a.out < "./in/$file.in" > tmp_output
+		ave_time=$((ave_time + end_time - start_time))
+	done
 	
-	end_time=$(date +"%s%3N")
+	ave_time=$((ave_time/5))
 
-	if [ "" = "`diff -q tmp_output out/$file.out`" ]
+	if [ "" = "`diff -q tmp_output ./$1/out/$file.out`" ]
 	then
-		echo "$file : " `expr $end_time - $start_time`"ms"
+		echo "$file : "$ave_time"ms"
 	else
 		echo "WA on $file"
 		break
@@ -24,7 +29,3 @@ for file in `\find ./in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!'`; do
 	rm tmp_output
 done
 
-echo ""
-echo "Passed all testcases!"
-
-cd $CALLDIR
