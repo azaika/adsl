@@ -25,7 +25,7 @@ for file in `\find ./$1/in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!' | s
 		echo "WA on $file"
 		break
 	fi
-
-	rm tmp_output
 done
 
+rm tmp_output
+rm a.out
