@@ -94,7 +94,7 @@ namespace adsl {
             update(idx, [=, &v](auto&&) noexcept { return v; });
         }
 
-        // accumulate [l, r), returns none if the given range is invalid
+        // accumulate [l, r), returns std::nullopt if the given range is invalid
         // time complexity: Θ(logN)
        std::optional<value_type> accumulate(size_type l, size_type r) const noexcept(noexcept(std::optional<value_type>(M::op(M::unit(), M::unit()))) && std::is_nothrow_copy_assignable_v<value_type>) {
             if (l >= size() || r > size() || l >= r)

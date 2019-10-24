@@ -5,6 +5,7 @@
 #include <optional>
 #include "../algebra/data_type.hpp"
 #include "../algebra/type_util.hpp"
+#include "../utility/concepts.hpp"
 
 namespace adsl {
 
@@ -24,7 +25,16 @@ namespace adsl {
         container_type node;
         size_type actual_size;
 
-        static constexpr bool is_group = CommutativeGroup<M>;
+        static constexpr bool is_nothrow_unit = noexcept(M::unit());
+        static constexpr bool is_nothrow_op = noexcept(M::op(std::declval<value_type>(), std::declval<value_type>()));
+
+        value_type accumulate_impl(size_type idx) const noexcept(is_nothrow_unit && is_nothrow_op) {
+            value_type res = M::unit();
+            for (size_type i = idx; i > 0; i &= i - 1)
+                res = M::op(res, node[i]);
+            
+            return res;
+        }
 
     public:
         fenwick_tree() = default;
@@ -60,7 +70,7 @@ namespace adsl {
         }
 
         // time complexity: Θ(logN)
-        void append_at(size_type idx, const_reference inc) {
+        void append_at(size_type idx, const_reference inc) noexcept(is_nothrow_op) {
             if (idx >= size())
                 return;
 
@@ -70,27 +80,45 @@ namespace adsl {
         }
 
         // time complexity: Θ(logN)
-        std::optional<value_type> accumulate(size_type idx) const requires is_group {
+        std::optional<value_type> accumulate(size_type idx) const noexcept(std::is_nothrow_move_constructible_v<value_type> && noexcept(accumulate_impl(idx))) {
             if (idx >= size())
                 return std::nullopt;
 
-            value_type res = M::unit();
-            for (size_type i = idx; i > 0; i &= i - 1)
-                res = M::op(res, node[i]);
-            
-            return res;
+            return accumulate_impl(idx);
+        }
+        
+        // accumulate [l, r), returns std::nullopt if the given range is invalid
+        // time complexity: Θ(logN)
+        std::optional<value_type> accumulate(size_type l, size_type r) const
+        noexcept(is_nothrow_op && noexcept(std::optional<value_type>(M::unit()), M::inv(accumulate_impl(l))))
+        requires CommutativeGroup<M>
+        {
+            if (l >= size() || r > size() || l >= r)
+                return std::nullopt;
+
+            return M::op(accumulate_impl(r), M::inv(accumulate_impl(l)));
+        }
+
+        // time complexity: Θ(logN)
+        std::optional<value_type> calc(size_type idx) const noexcept(noexcept(accumulate(idx, idx + 1))) requires CommutativeGroup<M> {
+            return accumulate(idx, idx + 1);
         }
 
         // update i-th value with updater(i-th value)
         // time complexity: Θ(logN)
         template <typename F>
         void update(size_type idx, F&& updater)
-        requires is_group && requires { {updater(std::declval<value_type>())} -> std::convertible_to<value_type>; }
+        noexcept(
+            NothrowConvertibleTo<value_type, value_type> &&
+            NothrowConvertibleTo<decltype(updater(std::declval<value_type>())), value_type> &&
+            is_nothrow_op &&
+            noexcept(M::inv(accumulate_impl(idx)), updater(std::declval<value_type>())))
+        requires CommutativeGroup<M> && requires { {updater(std::declval<value_type>())} -> std::convertible_to<value_type>; }
         {
             if (idx >= size())
                 return;
             
-            const value_type cur_val = *calc(idx);
+            const value_type cur_val = M::op(accumulate_impl(idx), M::inv(accumulate_impl(idx + 1)));
             const value_type new_val = updater(cur_val);
 
             append_at(idx, M::op(new_val, M::inv(cur_val)));
@@ -98,23 +126,10 @@ namespace adsl {
 
         // time complexity: Θ(logN)
         void set(size_type idx, const_reference v)
-        noexcept(noexcept(recalc_at(idx)) && std::is_nothrow_copy_assignable_v<value_type>)
-        requires is_group
+        noexcept(noexcept(this->update(idx, [=, &v](auto&&) noexcept { return v; })))
+        requires CommutativeGroup<M>
         {
             update(idx, [=, &v](auto&&) noexcept { return v; });
-        }
-
-        // time complexity: Θ(logN)
-        std::optional<value_type> accumulate(size_type l, size_type r) const requires is_group {
-            if (l >= size() || r > size() || l >= r)
-                return std::nullopt;
-
-            return M::op(*accumulate(r), M::inv(*accumulate(l)));
-        }
-
-        // time complexity: Θ(logN)
-        std::optional<value_type> calc(size_type idx) const requires is_group {
-            return accumulate(idx, idx + 1);
         }
 
     };
