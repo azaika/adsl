@@ -30,10 +30,14 @@ namespace adsl {
 
         value_type accumulate_impl(size_type idx) const noexcept(is_nothrow_unit && is_nothrow_op) {
             value_type res = M::unit();
-            for (size_type i = idx; i > 0; i &= i - 1)
+            for (size_type i = idx + 1; i > 0; i &= i - 1)
                 res = M::op(res, node[i]);
             
             return res;
+        }
+
+        size_type get_parent_idx(size_type idx) const noexcept {
+            return idx + (idx & (~idx + 1));
         }
 
     public:
@@ -61,7 +65,7 @@ namespace adsl {
                 if (i < src.size())
                     node[i + 1] = M::op(node[i + 1], src[i]);
 
-                const size_type par = (i + 1) + ((i + 1) & (~(i + 1) + 1));
+                const size_type par = get_parent_idx(i + 1);
                 node[par] = M::op(node[par], node[i + 1]);
             }
             if (len == src.size())
@@ -81,8 +85,7 @@ namespace adsl {
             if (idx >= size())
                 return;
 
-            ++idx;
-            for (size_type i = idx + 1; i < node.size(); i += i & (~i + 1))
+            for (size_type i = idx + 1; i < node.size(); i = get_parent_idx(i))
                 node[i] = M::op(node[i], inc);
         }
 
@@ -103,7 +106,7 @@ namespace adsl {
             if (l >= size() || r > size() || l >= r)
                 return std::nullopt;
 
-            return M::op(accumulate_impl(r), M::inv(accumulate_impl(l)));
+            return M::op(accumulate_impl(r - 1), (l == 0 ? M::unit() : M::inv(accumulate_impl(l - 1))));
         }
 
         // time complexity: Θ(logN)
