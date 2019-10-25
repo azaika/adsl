@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <string>
-#include "include/segtree/fenwick_tree.hpp"
+#include "adsl/segtree/fenwick_tree.hpp"
 
 using u32 = std::uint32_t;
 

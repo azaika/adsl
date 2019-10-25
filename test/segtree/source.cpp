@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
-#include "../../include/segtree/segtree.hpp"
+#include "adsl/segtree/segtree.hpp"
 
 using i64 = std::int64_t;
 

@@ -2,7 +2,7 @@
 #define ADSL_ALGEBRA_TYPE_UTIL_HPP
 
 #include <type_traits>
-#include "./data_type.hpp"
+#include "data_type.hpp"
 
 namespace adsl {
 

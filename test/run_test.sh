@@ -1,15 +1,18 @@
+#!/bin/sh
 
-gpp -std=c++2a -O2 ./$1/source.cpp
+sh_dir=`\dirname $0`
 
-for file in `\find ./$1/in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!' | sort -f`; do
+~/usr/bin/g++ -Wall -Wextra -std=c++2a -O2 -I $sh_dir/../include $sh_dir/$1/source.cpp
 
-	./a.out < "./$1/in/$file.in" > tmp_output
+for file in `\find $sh_dir/$1/in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!' | sort -f`; do
+
+	./a.out < "$sh_dir/$1/in/$file.in" > tmp_output
 
 	ave_time=0
 	for i in `seq 5`; do
 		start_time=$(date +"%s%3N")
 
-		./a.out < "./$1/in/$file.in" > tmp_output
+		./a.out < "$sh_dir/$1/in/$file.in" > tmp_output
 	
 		end_time=$(date +"%s%3N")
 
@@ -18,7 +21,7 @@ for file in `\find ./$1/in -maxdepth 1 -type f | sed -E 's!^.*/(.+)\.in!\1!' | s
 	
 	ave_time=$((ave_time/5))
 
-	if [ "" = "`diff -q tmp_output ./$1/out/$file.out`" ]
+	if [ "" = "`diff -q tmp_output $sh_dir/$1/out/$file.out`" ]
 	then
 		echo "$file : "$ave_time"ms"
 	else

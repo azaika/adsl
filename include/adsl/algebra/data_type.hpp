@@ -22,18 +22,18 @@ namespace adsl {
 		{x + y} -> std::convertible_to<T>;
 	};
 
-	class commutative_tag {};
-
-	// M::op must be commutative
-	template <typename M>
-	concept CommutativeMonoid = Monoid<M> && std::is_base_of_v<commutative_tag, M>;
-
-
+	
 	template <typename G>
 	concept Group = Monoid<G> && requires(G g) {
 		// G::op(a, G::inv(a)) must equal to G::unit()
 		{G::inv(G::unit())} -> std::convertible_to<typename G::value_type>;
 	};
+
+	class commutative_tag {};
+
+	// M::op must be commutative
+	template <typename M>
+	concept CommutativeMonoid = Monoid<M> && std::is_base_of_v<commutative_tag, M>;
 
 	// G::op must be commutative
 	template <typename G>
