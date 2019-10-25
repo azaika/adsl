@@ -47,7 +47,7 @@ namespace adsl {
             
             node = container_type(len + 1, M::unit());
         }
-        explicit fenwick_tree(const container_type& src) : actual_size(src.size()) {
+        fenwick_tree(const container_type& src) : actual_size(src.size()) {
             if (src.size() == 0)
                 return;
             
@@ -57,8 +57,15 @@ namespace adsl {
             
             node = container_type(len + 1, M::unit());
 
-            for (size_type i = 0; i < src.size(); ++i)
-                append_at(i, src[i]);
+            for (size_type i = 0; i + 1 < len; ++i) {
+                if (i < src.size())
+                    node[i + 1] = M::op(node[i + 1], src[i]);
+
+                const size_type par = (i + 1) + ((i + 1) & (~(i + 1) + 1));
+                node[par] = M::op(node[par], node[i + 1]);
+            }
+            if (len == src.size())
+                node[len] = M::op(node[len], src.back());
         }
 
         size_type size() const noexcept {
@@ -75,7 +82,7 @@ namespace adsl {
                 return;
 
             ++idx;
-            for (size_type i = idx + 1; i < node.size(); i += i & ~i + 1)
+            for (size_type i = idx + 1; i < node.size(); i += i & (~i + 1))
                 node[i] = M::op(node[i], inc);
         }
 

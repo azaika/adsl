@@ -45,7 +45,7 @@ namespace adsl {
             
             node = container_type(len * 2, M::unit());
         }
-        explicit segtree(const container_type& src) : actual_size(src.size()) {
+        segtree(const container_type& src) : actual_size(src.size()) {
             if (src.size() == 0)
                 return;
             

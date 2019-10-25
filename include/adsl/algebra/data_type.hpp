@@ -29,6 +29,13 @@ namespace adsl {
 		{G::inv(G::unit())} -> std::convertible_to<typename G::value_type>;
 	};
 
+	template <typename T>
+	concept GrouplyAdditionable = requires(T x, T y) {
+        requires std::is_default_constructible_v<T>;
+		{x + y} -> std::convertible_to<T>;
+		{-x} -> std::convertible_to<T>;
+	};
+
 	class commutative_tag {};
 
 	// M::op must be commutative
