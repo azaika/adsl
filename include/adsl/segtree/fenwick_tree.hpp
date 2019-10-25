@@ -80,6 +80,7 @@ namespace adsl {
             return size() == 0;
         }
 
+        // update i-th value by applying inc
         // time complexity: Θ(logN)
         void append_at(size_type idx, const_reference inc) noexcept(is_nothrow_op) {
             if (idx >= size())
@@ -89,6 +90,7 @@ namespace adsl {
                 node[i] = M::op(node[i], inc);
         }
 
+        // accumulate [0, idx], returns std::nullopt if the given index is invalid
         // time complexity: Θ(logN)
         std::optional<value_type> accumulate(size_type idx) const noexcept(std::is_nothrow_move_constructible_v<value_type> && noexcept(accumulate_impl(idx))) {
             if (idx >= size())
@@ -99,6 +101,7 @@ namespace adsl {
         
         // accumulate [l, r), returns std::nullopt if the given range is invalid
         // time complexity: Θ(logN)
+        // requires: commutative
         std::optional<value_type> accumulate(size_type l, size_type r) const
         noexcept(is_nothrow_op && noexcept(std::optional<value_type>(M::unit()), M::inv(accumulate_impl(l))))
         requires CommutativeGroup<M>
@@ -109,32 +112,36 @@ namespace adsl {
             return M::op(accumulate_impl(r - 1), (l == 0 ? M::unit() : M::inv(accumulate_impl(l - 1))));
         }
 
+        // calculate the value of idx
         // time complexity: Θ(logN)
+        // requires: commutative
         std::optional<value_type> calc(size_type idx) const noexcept(noexcept(accumulate(idx, idx + 1))) requires CommutativeGroup<M> {
             return accumulate(idx, idx + 1);
         }
 
         // update i-th value with updater(i-th value)
         // time complexity: Θ(logN)
+        // requires: commutative
         template <typename F>
         void update(size_type idx, F&& updater)
         noexcept(
             NothrowConvertibleTo<value_type, value_type> &&
-            NothrowConvertibleTo<decltype(updater(std::declval<value_type>())), value_type> &&
+            NothrowConvertibleTo<decltype(updater(M::unit())), value_type> &&
             is_nothrow_op &&
-            noexcept(M::inv(accumulate_impl(idx)), updater(std::declval<value_type>())))
-        requires CommutativeGroup<M> && requires { {updater(std::declval<value_type>())} -> std::convertible_to<value_type>; }
+            noexcept(M::inv(accumulate_impl(idx)), updater(M::unit())))
+        requires CommutativeGroup<M> && requires { {updater(M::unit())} -> std::convertible_to<value_type>; }
         {
             if (idx >= size())
                 return;
             
-            const value_type cur_val = M::op(accumulate_impl(idx), M::inv(accumulate_impl(idx + 1)));
+            const value_type cur_val = M::op(accumulate_impl(idx), (l == 0 ? M::unit() : M::inv(accumulate_impl(idx - 1))));
             const value_type new_val = updater(cur_val);
 
             append_at(idx, M::op(new_val, M::inv(cur_val)));
         }
 
         // time complexity: Θ(logN)
+        // requires: commutative
         void set(size_type idx, const_reference v)
         noexcept(noexcept(this->update(idx, [=, &v](auto&&) noexcept { return v; })))
         requires CommutativeGroup<M>
