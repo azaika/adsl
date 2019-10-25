@@ -22,9 +22,11 @@ namespace adsl {
 		{x + y} -> std::convertible_to<T>;
 	};
 
+	class commutative_tag {};
+
 	// M::op must be commutative
 	template <typename M>
-	concept CommutativeMonoid = Monoid<M> && true;
+	concept CommutativeMonoid = Monoid<M> && std::is_base_of_v<commutative_tag, M>;
 
 
 	template <typename G>
@@ -35,7 +37,7 @@ namespace adsl {
 
 	// G::op must be commutative
 	template <typename G>
-	concept CommutativeGroup = Group<G> && true;
+	concept CommutativeGroup = Group<G> && std::is_base_of_v<commutative_tag, G>;
 }
 
 #endif // !ADSL_ALGEBRA_DATA_TYPE_HPP
