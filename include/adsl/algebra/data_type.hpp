@@ -8,32 +8,25 @@
 namespace adsl {
 
 	template <typename M>
-	concept Monoid = requires {
+	concept Magma = requires {
 		typename M::value_type;
 
+		{ M::op(std::declval<typename M::value_type>(), std::declval<typename M::value_type>()) } -> std::convertible_to<typename M::value_type>;
+	};
+
+	// G::op must be associative
+	template <typename G>
+	concept SemiGroup = Magma<G> && true;
+
+	template <typename M>
+	concept Monoid = SemiGroup<M> && requires {
 		{M::unit()} -> std::convertible_to<typename M::value_type>;
-		// M::op must be associative
-		{M::op(M::unit(), M::unit())} -> std::convertible_to<typename M::value_type>;
 	};
 
-	template <typename T>
-	concept MonoidallyAdditionable = requires(T x, T y) {
-        requires std::is_default_constructible_v<T>;
-		{x + y} -> std::convertible_to<T>;
-	};
-
-	
 	template <typename G>
 	concept Group = Monoid<G> && requires {
 		// G::op(a, G::inv(a)) must equal to G::unit()
 		{G::inv(G::unit())} -> std::convertible_to<typename G::value_type>;
-	};
-
-	template <typename T>
-	concept GrouplyAdditionable = requires(T x, T y) {
-        requires std::is_default_constructible_v<T>;
-		{x + y} -> std::convertible_to<T>;
-		{-x} -> std::convertible_to<T>;
 	};
 
 
@@ -48,6 +41,20 @@ namespace adsl {
 	concept CommutativeGroup = Group<G> && std::is_base_of_v<commutative_tag, G>;
 
 
+	template <typename T>
+	concept MonoidallyAdditionable = requires(T x, T y) {
+        requires std::is_default_constructible_v<T>;
+		{x + y} -> std::convertible_to<T>;
+	};
+
+	template <typename T>
+	concept GrouplyAdditionable = requires(T x, T y) {
+        requires std::is_default_constructible_v<T>;
+		{x + y} -> std::convertible_to<T>;
+		{-x} -> std::convertible_to<T>;
+	};
+
+
 	template <typename A>
 	concept LeftAction = requires {
 		typename A::domain;
@@ -60,6 +67,7 @@ namespace adsl {
 	// A::act(m1, A::act(m2, x)) must equal to A::act(M::op(m1, m2), x)
 	template <typename A>
 	concept MonoidAct = LeftAction<A> && CommutativeMonoid<typename A::domain>;
+
 }
 
 #endif // !ADSL_ALGEBRA_DATA_TYPE_HPP
