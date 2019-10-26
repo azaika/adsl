@@ -1,0 +1,10 @@
+#ifndef ADSL_SEGTREE_DUAL_SEGTREE_HPP
+#define ADSL_SEGTREE_DUAL_SEGTREE_HPP
+
+namespace adsl {
+
+    
+
+}
+
+#endif // !ADSL_SEGTREE_DUAL_SEGTREE_HPP
