@@ -2,6 +2,7 @@
 #define ADSL_ALGEBRA_TYPE_UTIL_HPP
 
 #include <type_traits>
+#include <optional>
 #include "data_type.hpp"
 
 namespace adsl {
@@ -128,6 +129,24 @@ namespace adsl {
             }
 	    };
     }
+
+    template <SemiGroup G>
+    struct to_monoid {
+        using value_type = std::optional<typename G::value_type>;
+
+        static value_type unit() noexcept {
+            return std::nullopt;
+        }
+
+        static value_type op(const value_type& x, const value_type& y) noexcept(noexcept(G::op(*x, *y))) {
+            if (x == std::nullopt)
+                return y;
+            if (y == std::nullopt)
+                return x;
+            
+            return G::op(*x, *y);
+        }
+    };
 
     template <typename ValueType, ValueType identity, auto func, bool is_commutative = false>
     using make_monoid = impl::make_monoid<ValueType, identity, func, is_commutative>;
