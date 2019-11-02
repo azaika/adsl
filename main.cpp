@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
-#include "adsl/segtree/fenwick_tree.hpp"
+#include "adsl/segtree/dual_segtree.hpp"
 
 using i32 = std::int32_t;
 using u32 = std::uint32_t;
@@ -11,15 +11,12 @@ using MaxM = adsl::make_monoid<u32, 0, [](auto&& x, auto&& y) { return std::max(
 
 int main() {
     // モノイドを指定
-    adsl::fenwick_tree<MaxM> seg1{{1u, 6u, 2u, 9u, 3u}};
+    adsl::dual_segtree<adsl::default_monoid<i32>> sd{7};
 
-    for (size_t i = 0; i < seg1.size(); ++i)
-        std::cout << *seg1.accumulate(i) << std::endl;
+    sd.append(1, 4, 3);
+    sd.append(3, 7, -1);
+    sd.append(6, 7, 5);
 
-
-    // 演算に足し算を使うモノイドを使う
-    adsl::fenwick_tree<adsl::default_group<i32>> seg2{{1, 2, 3, 4, -4, -3, -2, -1}};
-
-    for (size_t i = 0; i < seg2.size(); ++i)
-        std::cout << *seg2.accumulate(i) << std::endl;
+    for (size_t i = 0; i < 7; ++i)
+        std::cout << *sd.get(i) << std::endl;
 }

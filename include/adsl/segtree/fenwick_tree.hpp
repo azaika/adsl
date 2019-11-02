@@ -23,7 +23,7 @@ namespace adsl {
 
     private:
         container_type node;
-        size_type actual_size;
+        size_type actual_size = 0;
 
         static constexpr bool is_nothrow_unit = noexcept(M::unit());
         static constexpr bool is_nothrow_op = noexcept(M::op(std::declval<value_type>(), std::declval<value_type>()));
@@ -134,7 +134,7 @@ namespace adsl {
             if (idx >= size())
                 return;
             
-            const value_type cur_val = M::op(accumulate_impl(idx), (l == 0 ? M::unit() : M::inv(accumulate_impl(idx - 1))));
+            const value_type cur_val = M::op(accumulate_impl(idx), (idx == 0 ? M::unit() : M::inv(accumulate_impl(idx - 1))));
             const value_type new_val = updater(cur_val);
 
             append_at(idx, M::op(new_val, M::inv(cur_val)));

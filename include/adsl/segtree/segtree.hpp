@@ -27,7 +27,7 @@ namespace adsl {
         
     private:
         container_type node;
-        size_type actual_size;
+        size_type actual_size = 0;
 
         // contracts: idx <- [0, node.size() / 2)
         void recalc_at(size_type idx) noexcept(noexcept(M::op(std::declval<value_type>(), std::declval<value_type>()))) {
