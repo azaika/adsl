@@ -90,7 +90,7 @@ namespace adsl {
                 node[i] = M::op(node[i], inc);
         }
 
-        // accumulate [0, idx], returns std::nullopt if the given index is invalid
+        // accumulate [0, idx], return std::nullopt if the given index is invalid
         // time complexity: Θ(logN)
         std::optional<value_type> accumulate(size_type idx) const noexcept(std::is_nothrow_move_constructible_v<value_type> && noexcept(accumulate_impl(idx))) {
             if (idx >= size())
@@ -99,7 +99,7 @@ namespace adsl {
             return accumulate_impl(idx);
         }
         
-        // accumulate [l, r), returns std::nullopt if the given range is invalid
+        // accumulate [l, r), return std::nullopt if the given range is invalid
         // time complexity: Θ(logN)
         // requires: commutative
         std::optional<value_type> accumulate(size_type l, size_type r) const
@@ -112,7 +112,7 @@ namespace adsl {
             return M::op(accumulate_impl(r - 1), (l == 0 ? M::unit() : M::inv(accumulate_impl(l - 1))));
         }
 
-        // calculate the value of idx
+        // calculate i-th value
         // time complexity: Θ(logN)
         // requires: commutative
         std::optional<value_type> calc(size_type idx) const noexcept(noexcept(accumulate(idx, idx + 1))) requires CommutativeGroup<M> {

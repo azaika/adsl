@@ -18,5 +18,5 @@ int main() {
     sd.append(6, 7, 5);
 
     for (size_t i = 0; i < 7; ++i)
-        std::cout << *sd.get(i) << std::endl;
+        std::cout << *sd.calc(i) << std::endl;
 }
