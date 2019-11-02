@@ -60,7 +60,7 @@ namespace adsl {
             return size() == 0;
         }
 
-        void append(size_type l, size_type r, const_reference inc) {
+        void append(size_type l, size_type r, const_reference inc) noexcept(noexcept(M::op(std::declval<value_type>(), std::declval<value_type>()), prop_to(l))) {
             if (l >= size() || r > size() || l >= r)
                 return;
 
@@ -83,7 +83,7 @@ namespace adsl {
             }
         }
 
-        std::optional<value_type> get(size_type idx) {
+        std::optional<value_type> get(size_type idx) noexcept(std::is_nothrow_move_constructible_v<value_type> && noexcept(prop_to(idx))) {
             if (idx >= size())
                 return std::nullopt;
 
