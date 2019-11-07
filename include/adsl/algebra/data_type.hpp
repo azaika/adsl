@@ -60,13 +60,20 @@ namespace adsl {
 		typename A::domain;
 		typename A::space;
 
-		{ A::act(std::declval<typename A::domain>(), std::declval<typename A::space>()) } -> std::convertible_to<typename A::space>;
+		{ A::act(std::declval<typename A::domain>())(std::declval<typename A::space>()) } -> std::convertible_to<typename A::space>;
 	};
 
 	// A::act(M::unit(), x) must equal to x
 	// A::act(m1, A::act(m2, x)) must equal to A::act(M::op(m1, m2), x)
 	template <typename A>
 	concept MonoidAct = LeftAction<A> && CommutativeMonoid<typename A::domain>;
+
+	// F.operator () (Domain::unit()) must equal to the unit of codomain 
+	template <typename F, typename Domain>
+	concept MonoidHomomorphism = Monoid<Domain> && Monoid<std::remove_cvref_t<std::invoke_result_t<F, Domain>>>;
+
+	template <typename F, typename M>
+	concept MonoidEndomorphism = MonoidHomomorphism<F> && std::same_as<M, std::remove_cvref_t<std::invoke_result_t<F, Domain>>>;
 
 }
 
