@@ -66,7 +66,7 @@ namespace adsl {
 	// A::act(M::unit(), x) must equal to x
 	// A::act(m1, A::act(m2, x)) must equal to A::act(M::op(m1, m2), x)
 	template <typename A>
-	concept MonoidAct = LeftAction<A> && CommutativeMonoid<typename A::domain>;
+	concept MonoidAction = LeftAction<A> && CommutativeMonoid<typename A::domain>;
 
 	// F.operator () (Domain::unit()) must equal to the unit of codomain 
 	template <typename F, typename Domain>
