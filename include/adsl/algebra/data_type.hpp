@@ -73,7 +73,7 @@ namespace adsl {
 	concept MonoidHomomorphism = Monoid<Domain> && Monoid<std::remove_cvref_t<std::invoke_result_t<F, Domain>>>;
 
 	template <typename F, typename M>
-	concept MonoidEndomorphism = MonoidHomomorphism<F> && std::same_as<M, std::remove_cvref_t<std::invoke_result_t<F, Domain>>>;
+	concept MonoidEndomorphism = MonoidHomomorphism<F, M> && std::same_as<M, std::remove_cvref_t<std::invoke_result_t<F, M>>>;
 
 }
 
