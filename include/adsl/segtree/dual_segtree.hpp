@@ -60,7 +60,7 @@ namespace adsl {
             return size() == 0;
         }
 
-        // update [l, r) by applying inc, return std::nullopt if the given range is invalid
+        // update [l, r) by applying inc
         // time complexity: Θ(logN)
         void append(size_type l, size_type r, const_reference inc) noexcept(noexcept(M::op(std::declval<value_type>(), std::declval<value_type>()), prop_to(l))) {
             if (l >= size() || r > size() || l >= r)
