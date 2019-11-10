@@ -166,12 +166,12 @@ namespace adsl {
 
 
     template <typename D, typename S, auto func>
-    requires std::invocable<decltype(func), typename D::value_type, typename S::value_type>
+    requires requires { {func(std::declval<typename D::value_type>(), std::declval<typename S::value_type>())} -> std::convertible_to<typename S::value_type>; }
     struct make_action {
         using domain = D;
         using space = S;
 
-        static constexpr space::value_type act(const domain::value_type& v) noexcept(noexcept(func(v, std::declval<space::value_type>()))) {
+        static constexpr auto act(const domain::value_type& v) noexcept(noexcept(func(v, std::declval<typename space::value_type>()))) {
             return [&v](const space::value_type& s) noexcept(noexcept(func(v, s))) { return func(v, s); };
         }
     };

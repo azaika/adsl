@@ -12,9 +12,7 @@
 namespace adsl {
 
     template <typename A>
-    concept LazySegtreeAct = MonoidAction<A> && Monoid<typename A::space> && requires {
-        { A::act(A::domain::unit()) } -> MonoidEndomorphism<typename A::space>;
-    };
+    concept LazySegtreeAct = MonoidAction<A> && Monoid<typename A::space> && MonoidEndomorphism<decltype(A::act(std::declval<typename A::domain::value_type>())), typename A::space>;
 
     template <LazySegtreeAct Act, template <typename T, typename Allocator = std::allocator<T>> typename Container = std::vector>
     requires (
@@ -57,7 +55,7 @@ namespace adsl {
                 prop_at(idx >> i);
         }
 
-        void calc_at(size_type idx) const {
+        value_type calc_at(size_type idx) const {
             return Act::act(lazy[idx])(node[idx]);
         }
 
@@ -81,8 +79,8 @@ namespace adsl {
         lazy_segtree(const lazy_segtree&) = default;
 
         explicit lazy_segtree(size_type _size) : actual_size(_size) {
-            static_assert(sizeof(size_type) <= sizeof(operator_container_type::size_type));
-            static_assert(sizeof(size_type) <= sizeof(value_container_type::size_type));
+            static_assert(sizeof(size_type) <= sizeof(typename operator_container_type::size_type));
+            static_assert(sizeof(size_type) <= sizeof(typename value_container_type::size_type));
 
             if (_size == 0)
                 return;
@@ -161,7 +159,7 @@ namespace adsl {
             update(idx, [=, &v](auto&&) noexcept { return v; });
         }
 
-        std::optional<value_type> accumulate(size_type l, size_type r) const {
+        std::optional<value_type> accumulate(size_type l, size_type r) {
             if (l >= size() || r > size() || l >= r)
                 return std::nullopt;
 

@@ -60,7 +60,7 @@ namespace adsl {
 		typename A::domain;
 		typename A::space;
 
-		{ A::act(std::declval<typename A::domain>())(std::declval<typename A::space>()) } -> std::convertible_to<typename A::space>;
+		{ A::act(std::declval<typename A::domain::value_type>())(std::declval<typename A::space::value_type>()) } -> std::convertible_to<typename A::space::value_type>;
 	};
 
 	// A::act(M::unit(), x) must equal to x
@@ -68,12 +68,12 @@ namespace adsl {
 	template <typename A>
 	concept MonoidAction = LeftAction<A> && CommutativeMonoid<typename A::domain>;
 
-	// F.operator () (Domain::unit()) must equal to the unit of codomain 
-	template <typename F, typename Domain>
-	concept MonoidHomomorphism = Monoid<Domain> && Monoid<std::remove_cvref_t<std::invoke_result_t<F, Domain>>>;
+	// F.operator () (Domain::unit()) must equal to Codomain::unit()
+	template <typename F, typename Domain, typename Codomain>
+	concept MonoidHomomorphism = Monoid<Domain> && Monoid<Codomain> && std::convertible_to<std::invoke_result_t<F, typename Domain::value_type>, typename Codomain::value_type>;
 
 	template <typename F, typename M>
-	concept MonoidEndomorphism = MonoidHomomorphism<F, M> && std::same_as<M, std::remove_cvref_t<std::invoke_result_t<F, M>>>;
+	concept MonoidEndomorphism = MonoidHomomorphism<F, M, M>;
 
 }
 
