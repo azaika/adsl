@@ -1,7 +1,9 @@
 #ifndef ADSL_ALGEBRA_TYPE_UTIL_HPP
 #define ADSL_ALGEBRA_TYPE_UTIL_HPP
 
+#include <utility>
 #include <type_traits>
+#include <concepts>
 #include <optional>
 #include "data_type.hpp"
 
@@ -128,6 +130,7 @@ namespace adsl {
                 return -v;
             }
 	    };
+
     }
 
     template <SemiGroup G>
@@ -161,6 +164,17 @@ namespace adsl {
     template <GrouplyAdditionable T, bool is_commutative = std::is_signed_v<T>>
     using default_group = impl::default_group<T, is_commutative>;
 
+
+    template <typename D, typename S, auto func>
+    requires std::invocable<decltype(func), typename D::value_type, typename S::value_type>
+    struct make_action {
+        using domain = D;
+        using space = S;
+
+        static constexpr space::value_type act(const domain::value_type& v) noexcept(noexcept(func(v, std::declval<space::value_type>()))) {
+            return [&v](const space::value_type& s) noexcept(noexcept(func(v, s))) { return func(v, s); };
+        }
+    };
 }
 
 #endif // !ADSL_ALGEBRA_TYPE_UTIL_HPP

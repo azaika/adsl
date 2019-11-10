@@ -58,7 +58,7 @@ namespace adsl {
         }
 
         void calc_at(size_type idx) const {
-            return A::act(lazy[idx])(node[idx]);
+            return Act::act(lazy[idx])(node[idx]);
         }
 
         void reflect(size_type idx) {
@@ -67,13 +67,13 @@ namespace adsl {
         }
 
         void evaluate_at(size_type idx) {
-            node[idx] = calc_at(idx >> i);
+            node[idx] = calc_at(idx);
             prop_at(idx);
         }
 
         void evaluate(size_type idx) {
             for (size_type i = height; i >= 1; --i)
-                evaluate_at(idx);
+                evaluate_at(idx >> i);
         }
 
     public:
