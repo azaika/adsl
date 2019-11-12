@@ -1,19 +1,22 @@
+// http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_2_F
+
+#include <iostream>
 #include <cstdint>
 #include <algorithm>
-#include <string>
-#include <iostream>
-#include "adsl/segtree/lazy_segtree.hpp"
-
 #include <optional>
 #include <limits>
 
+#include "adsl/segtree/lazy_segtree.hpp"
+
 using i32 = std::int32_t;
-using u32 = std::uint32_t;
 
 constexpr i32 Inf = std::numeric_limits<i32>::max();
 
 int main() {
-    int n, q;
+    std::cin.tie(nullptr);
+    std::ios::sync_with_stdio(false);
+
+    i32 n, q;
     std::cin >> n >> q;
 
     using O = adsl::make_monoid<std::optional<i32>, std::nullopt, [](auto&& x, auto&& y) { return (y ? y : x); }, true>;
@@ -34,6 +37,8 @@ int main() {
             seg.append(s, t, x);
         }
         else
-            std::cout << *seg.accumulate(s, t) << std::endl;
+            std::cout << *seg.accumulate(s, t) << "\n";
     }
+
+    std::cout << std::flush;
 }

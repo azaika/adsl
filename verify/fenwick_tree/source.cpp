@@ -1,6 +1,9 @@
+// https://judge.yosupo.jp/problem/point_add_range_sum
+
 #include <iostream>
 #include <vector>
 #include <cstdint>
+
 #include "adsl/segtree/fenwick_tree.hpp"
 
 using i64 = std::int64_t;

@@ -60,8 +60,8 @@ namespace adsl {
         }
 
         void reflect(size_type idx) {
-            for (size_type i = idx; i > 0; i >>= 1)
-                node[idx] = space::op(calc_at(i << 1), calc_at((i << 1) + 1));
+            for (size_type i = idx >> 1; i > 0; i >>= 1)
+                node[i] = space::op(calc_at(i << 1), calc_at((i << 1) + 1));
         }
 
         void evaluate_at(size_type idx) {
@@ -165,7 +165,7 @@ namespace adsl {
 
             l += node.size() / 2;
             r += node.size() / 2;
-
+            
             evaluate(l);
             evaluate(r - 1);
 
